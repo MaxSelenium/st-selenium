@@ -1,8 +1,12 @@
 ﻿using NUnit.Framework;
-using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using OpenQA.Selenium.Support.UI;
 
 namespace FirstSeleniumTest
 {
@@ -13,21 +17,20 @@ namespace FirstSeleniumTest
         private WebDriverWait wait;
 
         [SetUp]
-        public void start()
+        public void Start()
         {
             driver = new ChromeDriver();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
         }
 
         [Test]
-        public void FirstTest()
+        public void Test1()
         {
-            driver.Url = "http://www.google.com/";
-            driver.FindElement(By.Name("q")).SendKeys("webdriver");
-            driver.FindElement(By.Name("btnG")).Click();
-            wait.Until(ExpectedConditions.TitleIs("webdriver - Поиск в Google"));
+            driver.Url = "http://www.yandex.ru/";
+            driver.FindElement(By.Id("text")).SendKeys("работает");
+            driver.FindElement(By.ClassName("search2__button")).Click();
+            wait.Until(ExpectedConditions.TitleContains("работает — Яндекс:"));
         }
-
         [TearDown]
         public void stop()
         {
