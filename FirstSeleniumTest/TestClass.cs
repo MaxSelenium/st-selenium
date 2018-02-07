@@ -26,10 +26,20 @@ namespace FirstSeleniumTest
         [Test]
         public void Test1()
         {
-            driver.Url = "http://www.yandex.ru/";
+            driver.Url = "http://www.ya.ru/";
             driver.FindElement(By.Id("text")).SendKeys("работает");
             driver.FindElement(By.ClassName("search2__button")).Click();
             wait.Until(ExpectedConditions.TitleContains("работает — Яндекс:"));
+        }
+
+        [Test]
+        public void LoginLiteCart()
+        {
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("admin");
+            driver.FindElement(By.Name("password")).SendKeys("admin");
+            driver.FindElement(By.Name("login")).Click();
+            wait.Until(ExpectedConditions.TitleIs("My Store"));
         }
         [TearDown]
         public void stop()
