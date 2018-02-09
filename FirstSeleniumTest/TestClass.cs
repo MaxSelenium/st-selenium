@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Firefox;
+using OpenQA.Selenium.Edge;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,9 @@ namespace FirstSeleniumTest
         [SetUp]
         public void Start()
         {
-            driver = new ChromeDriver();
+            //driver = new ChromeDriver();
+            driver = new EdgeDriver();
+            //driver = new FirefoxDriver();
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
         }
 
