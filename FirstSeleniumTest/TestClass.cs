@@ -26,10 +26,11 @@ namespace FirstSeleniumTest
 
             FirefoxOptions options = new FirefoxOptions();
             //options.BrowserExecutableLocation = @"C:\FF45\firefox.exe";
-            options.UseLegacyImplementation = true;
+            options.UseLegacyImplementation = false;
 
             //52.6.0
-            options.BrowserExecutableLocation = @"C:\Program Files\Mozilla Firefox\firefox.exe"; 
+            //options.BrowserExecutableLocation = @"C:\Program Files\Mozilla Firefox\firefox.exe";
+            options.BrowserExecutableLocation = @"C:\Program Files\Firefox Nightly\firefox.exe";
             //options.BrowserExecutableLocation = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
             driver = new FirefoxDriver(options);
             wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
