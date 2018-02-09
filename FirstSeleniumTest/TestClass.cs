@@ -22,9 +22,19 @@ namespace FirstSeleniumTest
         public void Start()
         {
             //driver = new ChromeDriver();
-            driver = new EdgeDriver();
-            //driver = new FirefoxDriver();
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(15));
+            //driver = new EdgeDriver();
+
+            FirefoxOptions options = new FirefoxOptions();
+            //options.BrowserExecutableLocation = @"C:\FF45\firefox.exe";
+            options.UseLegacyImplementation = true;
+
+            //52.6.0
+            options.BrowserExecutableLocation = @"C:\Program Files\Mozilla Firefox\firefox.exe"; 
+            //options.BrowserExecutableLocation = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
+            driver = new FirefoxDriver(options);
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            //driver = new FirefoxDriver(options);
+            //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
 
         [Test]
