@@ -113,6 +113,20 @@ namespace FirstSeleniumTest
                 }
             }
         }
+
+
+        [Test]
+        public void Task8()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+
+            int countItem = driver.FindElements(By.CssSelector("div.middle li[class='product column shadow hover-light']")).Count();
+            for (int i = 0; i < countItem; i++)
+            {
+                int s = driver.FindElements(By.CssSelector("div.middle li[class='product column shadow hover-light']"))[i].FindElements(By.CssSelector("div[class^='sticker']")).Count();
+                Assert.True(s==1); 
+            }
+        }
         private void Compare (string text1, string text2)
         {
             if (text1 != text2)
