@@ -1,0 +1,2 @@
+"C:\Users\Максим\Documents\GitHub\st-selenium\packages\NUnit.ConsoleRunner.3.8.0\tools\nunit3-console.exe" "C:\Users\Максим\Documents\GitHub\st-selenium\FirstSeleniumTest\bin\Debug\FirstSeleniumTest.dll"
+pause
