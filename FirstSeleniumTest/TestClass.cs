@@ -33,7 +33,7 @@ namespace FirstSeleniumTest
             //options.BrowserExecutableLocation = @"C:\Program Files\Firefox Nightly\firefox.exe";
             //options.BrowserExecutableLocation = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
             //driver = new FirefoxDriver(options);
-            //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
             //driver = new FirefoxDriver(options);
             //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
@@ -50,21 +50,14 @@ namespace FirstSeleniumTest
         [Test]
         public void LoginLiteCart()
         {
-            driver.Url = "http://localhost/litecart/admin/";
-            driver.FindElement(By.Name("username")).SendKeys("admin");
-            driver.FindElement(By.Name("password")).SendKeys("admin");
-            driver.FindElement(By.Name("login")).Click();
+            Login();
             wait.Until(ExpectedConditions.TitleIs("My Store"));
         }
 
         [Test]
         public void AdminPart()
         {
-            driver.Url = "http://localhost/litecart/admin/";
-            driver.FindElement(By.Name("username")).SendKeys("admin");
-            driver.FindElement(By.Name("password")).SendKeys("admin");
-            driver.FindElement(By.Name("login")).Click();
-
+            Login();
             int countItemLevel1 = driver.FindElements(By.CssSelector("div#box-apps-menu-wrapper li#app-")).Count();
             for (int i = 0; i < countItemLevel1; i++)
             {
@@ -91,11 +84,7 @@ namespace FirstSeleniumTest
         [Test]
         public void Task7()
         {
-            driver.Url = "http://localhost/litecart/admin/";
-            driver.FindElement(By.Name("username")).SendKeys("admin");
-            driver.FindElement(By.Name("password")).SendKeys("admin");
-            driver.FindElement(By.Name("login")).Click();
-
+            Login();
             int countItemLevel1 = driver.FindElements(By.CssSelector("div#box-apps-menu-wrapper li#app-")).Count();
             for (int i = 0; i < countItemLevel1; i++)
             {
@@ -131,10 +120,7 @@ namespace FirstSeleniumTest
         [Test]
         public void Task9()
         {
-            driver.Url = "http://localhost/litecart/admin/";
-            driver.FindElement(By.Name("username")).SendKeys("admin");
-            driver.FindElement(By.Name("password")).SendKeys("admin");
-            driver.FindElement(By.Name("login")).Click();
+            Login();
 
             driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
             IWebElement tabl = driver.FindElement(By.CssSelector("[name='countries_form']"));
@@ -173,6 +159,34 @@ namespace FirstSeleniumTest
               driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
             }
         }
+        [Test]
+        public void Task9_2()
+        {
+            Login();
+
+            driver.Url = "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones";
+            IWebElement tabl = driver.FindElement(By.CssSelector("[name='geo_zones_form']"));
+            var rows = tabl.FindElements(By.CssSelector("tr.row"));
+            List<string> countries = new List<string>();
+            for (int i = 0; i < rows.Count; i++)
+            {
+                driver.FindElement(By.CssSelector("[name='geo_zones_form']")).FindElements(By.CssSelector("tr.row"))[i].FindElement(By.CssSelector("[href]")).Click();
+                IWebElement tabl2 = driver.FindElement(By.CssSelector("[id='table-zones']"));
+                var rows2 = tabl2.FindElements(By.CssSelector("tr:not([class='header'])"));
+                List<string> zones = new List<string>();
+                for (int n = 0; n < rows2.Count; n++)
+                {
+                    var cells = rows2[n].FindElements(By.TagName("td"));
+                    if (cells.Count>1)
+                        zones.Add(cells[2].FindElement(By.CssSelector("[selected = 'selected']")).Text);
+                }
+                if (!IsSorted(zones))
+                {
+                    Assert.Fail($"Список зон не отсортирован!");
+                }
+                driver.Url = "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones";
+            }
+        }
         private bool IsSorted (List<string> list1)
         {
             List<string> list2 = new List<string>(list1);
@@ -192,6 +206,13 @@ namespace FirstSeleniumTest
         private bool IsExists(By locator)
         {
             return driver.FindElements(locator).Count > 0;
+        }
+        private void Login ()
+        {
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("admin");
+            driver.FindElement(By.Name("password")).SendKeys("admin");
+            driver.FindElement(By.Name("login")).Click();
         }
 
         [TearDown]
