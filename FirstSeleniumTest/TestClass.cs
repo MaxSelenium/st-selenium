@@ -71,7 +71,7 @@ namespace FirstSeleniumTest
                 driver.FindElements(By.CssSelector("div#box-apps-menu-wrapper li#app-"))[i].Click();
                 
                
-                if  (isExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
+                if  (IsExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
                 {
                     Compare(driver.FindElement(By.CssSelector("h1")).Text, driver.FindElement(By.CssSelector("li#app- li.selected")).Text);
                     int countItemLevel2 = driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']")).Count();
@@ -100,15 +100,15 @@ namespace FirstSeleniumTest
             for (int i = 0; i < countItemLevel1; i++)
             {
                 driver.FindElements(By.CssSelector("div#box-apps-menu-wrapper li#app-"))[i].Click();
-                Assert.True(isExists(By.CssSelector("h1")));
-                if (isExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
+                Assert.True(IsExists(By.CssSelector("h1")));
+                if (IsExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
                 {
                     
                     int countItemLevel2 = driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']")).Count();
                     for (int n = 0; n < countItemLevel2; n++)
                     {
                         driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']"))[n].Click();
-                        Assert.True(isExists(By.CssSelector("h1")));
+                        Assert.True(IsExists(By.CssSelector("h1")));
                     }
                 }
             }
@@ -127,12 +127,69 @@ namespace FirstSeleniumTest
                 Assert.True(s==1); 
             }
         }
+
+        [Test]
+        public void Task9()
+        {
+            driver.Url = "http://localhost/litecart/admin/";
+            driver.FindElement(By.Name("username")).SendKeys("admin");
+            driver.FindElement(By.Name("password")).SendKeys("admin");
+            driver.FindElement(By.Name("login")).Click();
+
+            driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
+            IWebElement tabl = driver.FindElement(By.CssSelector("[name='countries_form']"));
+            var rows = tabl.FindElements(By.CssSelector("tr.row"));
+            List<string> countries = new List<string>();
+            List<int> attach = new List<int>();
+          
+            for (int i = 0;i<rows.Count; i++)
+            {
+                var cells = rows[i].FindElements(By.TagName("td"));
+                //if(cells[4].Text!="")
+                    countries.Add(cells[4].Text);
+                if (cells[5].Text!="0")
+                    attach.Add(i);
+            }
+            if(!IsSorted(countries))
+            {
+                Assert.Fail($"Список стран не отсортирован!");
+            }
+            foreach (int i in attach)
+            {
+                driver.FindElement(By.CssSelector("[name='countries_form']")).FindElements(By.CssSelector("tr.row"))[i].FindElement(By.CssSelector("[href]")).Click();
+                IWebElement tabl2 = driver.FindElement(By.CssSelector("[id='table-zones']"));
+                var rows2 = tabl2.FindElements(By.CssSelector("tr:not([class='header'])"));
+                List<string> zones = new List<string>();
+                for (int  n= 0; n < rows2.Count; n++)
+                {
+                    var cells = rows2[n].FindElements(By.TagName("td"));
+                    if(cells[2].Text!="")
+                        zones.Add(cells[2].Text);
+                }
+                if (!IsSorted(zones))
+                {
+                    Assert.Fail($"Список зон не отсортирован!");
+                }
+              driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
+            }
+        }
+        private bool IsSorted (List<string> list1)
+        {
+            List<string> list2 = new List<string>(list1);
+            list1.Sort();
+            for (int i = 0; i < list1.Count; i++)
+            {
+                if (list1[i] != list2[i])
+                    return false;
+            }
+            return true;
+        }
         private void Compare (string text1, string text2)
         {
             if (text1 != text2)
                 Assert.Fail($"Страница {text1} не равна меню {text2} !");
         }
-        private bool isExists( By locator  )
+        private bool IsExists(By locator)
         {
             return driver.FindElements(locator).Count > 0;
         }
