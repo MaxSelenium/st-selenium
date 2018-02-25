@@ -22,8 +22,9 @@ namespace FirstSeleniumTest
         [SetUp]
         public void Start()
         {
-            driver = new ChromeDriver();
-            //driver = new EdgeDriver();
+            //driver = new ChromeDriver();
+            driver = new EdgeDriver();
+            //driver = new FirefoxDriver();
 
             //FirefoxOptions options = new FirefoxOptions();
             //options.BrowserExecutableLocation = @"C:\FF45\firefox.exe";
@@ -34,7 +35,8 @@ namespace FirstSeleniumTest
             //options.BrowserExecutableLocation = @"C:\Program Files\Firefox Nightly\firefox.exe";
             //options.BrowserExecutableLocation = @"C:\Program Files (x86)\Mozilla Firefox\firefox.exe";
             //driver = new FirefoxDriver(options);
-            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+            driver.Manage().Timeouts().ImplicitWait= TimeSpan.FromSeconds(5);
             //driver = new FirefoxDriver(options);
             //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
         }
@@ -253,7 +255,7 @@ namespace FirstSeleniumTest
 
         private bool IsGray(string color)
         {
-            var c = color.Replace("rgba(","").Replace(")","").Replace(" ","").Split(',');
+            var c = color.Replace("rgba(","").Replace(")","").Replace(" ","").Replace("rgb(","").Split(',');
             if(c[0] == c[1] && c[1] == c[2])
                     return true;
             return false;
@@ -261,7 +263,7 @@ namespace FirstSeleniumTest
 
         private bool IsRed(string color)
         {
-            var c = color.Replace("rgba(", "").Replace(")", "").Replace(" ", "").Split(',');
+            var c = color.Replace("rgba(", "").Replace(")", "").Replace(" ", "").Replace("rgb(", "").Split(',');
             if (c[1] == "0" && c[2]=="0")
                 return true;
             return false;
