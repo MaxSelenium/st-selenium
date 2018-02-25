@@ -22,8 +22,8 @@ namespace FirstSeleniumTest
         [SetUp]
         public void Start()
         {
-            //driver = new ChromeDriver();
-            driver = new EdgeDriver();
+            driver = new ChromeDriver();
+            //driver = new EdgeDriver();
             //driver = new FirefoxDriver();
 
             //FirefoxOptions options = new FirefoxOptions();
@@ -238,6 +238,57 @@ namespace FirstSeleniumTest
                 Assert.Fail($"Страница товара: Скидочная цена не выделена жирным!");
             if (!(product.PriceFront.Size < product.SalePriceFront.Size))
                 Assert.Fail($"Страница товара: Основная цена не меньше скидочной");
+        }
+
+
+        [Test]
+        public void Task11()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+            var logForm = driver.FindElement(By.Name("login_form"));
+            //logForm.FindElement(By.CssSelector("[href]")).Click();
+            logForm.FindElement(By.XPath(".//a[contains(.,'New customers click here')]")).Click();
+
+            driver.FindElement(By.Name("tax_id")).SendKeys("123");
+            driver.FindElement(By.Name("company")).SendKeys("VSK");
+            driver.FindElement(By.Name("firstname")).SendKeys("Maxim");
+            driver.FindElement(By.Name("lastname")).SendKeys("Bokov");
+            driver.FindElement(By.Name("address1")).SendKeys("address1");
+            driver.FindElement(By.Name("address2")).SendKeys("address2");
+            driver.FindElement(By.Name("postcode")).SendKeys("12345");
+            driver.FindElement(By.Name("city")).SendKeys("Moscow");
+            var select = driver.FindElement(By.Name("country_code"));
+            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+            //js.ExecuteScript("arguments[0].selectedIndex=6; arguments[0].dispatchEvent(new Event('change'))", select);
+            js.ExecuteScript("arguments[0].style.opacity=1", select);
+            SelectElement s = new SelectElement(select);
+            s.SelectByText("United States");
+
+            string email = GetEmail();
+            driver.FindElement(By.Name("email")).SendKeys(email);
+            driver.FindElement(By.Name("phone")).SendKeys("79269266699");
+            driver.FindElement(By.Name("password")).SendKeys("123");
+            driver.FindElement(By.Name("confirmed_password")).SendKeys("123");
+            driver.FindElement(By.Name("create_account")).Click();
+            select = driver.FindElement(By.Name("zone_code"));
+            js.ExecuteScript("arguments[0].style.opacity=1", select);
+            s = new SelectElement(select);
+            s.SelectByText("California");
+            driver.FindElement(By.Name("password")).SendKeys("123");
+            driver.FindElement(By.Name("confirmed_password")).SendKeys("123");
+            driver.FindElement(By.Name("create_account")).Click();
+            var menuAcc = driver.FindElement(By.Id("box-account"));
+            menuAcc.FindElement(By.XPath(".//a[contains(.,'Logout')]")).Click();
+            driver.FindElement(By.Name("email")).SendKeys(email);
+            driver.FindElement(By.Name("password")).SendKeys("123");
+            driver.FindElement(By.Name("login")).Click();
+            menuAcc = driver.FindElement(By.Id("box-account"));
+            menuAcc.FindElement(By.XPath(".//a[contains(.,'Logout')]")).Click();
+        }
+
+        private string GetEmail()
+        {
+            return $"e{DateTime.Now.ToString().Replace(" ", "").Replace(":", "").Replace(".", "")}@mail.ru";
         }
         private Front GetFront(IWebElement element)
         {
