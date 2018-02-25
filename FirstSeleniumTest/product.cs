@@ -11,7 +11,15 @@ namespace FirstSeleniumTest
         public string Name { get; internal set; }
         public string Price { get; internal set; }
         public string SalePrice { get; internal set; }
-        public string PriceColor { get; internal set; }
-        public string SalePriceColor { get; internal set; }
+        public Front PriceFront { get; internal set; }
+        public Front SalePriceFront { get; internal set; }
+    }
+    public class Front
+    {
+        public string Color { get; internal set; }
+        public decimal Size { get; internal set; }
+        public bool through { get; internal set; }
+        public bool bold { get; internal set; }
+
     }
 }

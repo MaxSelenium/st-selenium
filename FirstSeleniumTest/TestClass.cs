@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Support.UI;
+using System.Globalization;
 
 namespace FirstSeleniumTest
 {
@@ -130,7 +131,6 @@ namespace FirstSeleniumTest
             for (int i = 0;i<rows.Count; i++)
             {
                 var cells = rows[i].FindElements(By.TagName("td"));
-                //if(cells[4].Text!="")
                     countries.Add(cells[4].Text);
                 if (cells[5].Text!="0")
                     attach.Add(i);
@@ -193,41 +193,62 @@ namespace FirstSeleniumTest
             driver.Url = "http://localhost/litecart/en/";
 
             var mainItem = driver.FindElement(By.CssSelector("div#box-campaigns")).FindElement(By.CssSelector("li[class='product column shadow hover-light']"));
-            Product Main = new Product();
-            Main.Name = mainItem.FindElement(By.CssSelector("div.name")).Text;
-            
-            Main.Price = mainItem.FindElement(By.CssSelector("s.regular-price")).Text;
-            Main.PriceColor = mainItem.FindElement(By.CssSelector("s.regular-price")).GetCssValue("color");
-            Main.SalePrice = mainItem.FindElement(By.CssSelector("strong.campaign-price")).Text;
-            Main.SalePriceColor = mainItem.FindElement(By.CssSelector("strong.campaign-price")).GetCssValue("color");
-            if (!IsGray(Main.PriceColor))
-                Assert.Fail($"Основная цена не серая");
-            if (!IsRed(Main.SalePriceColor))
-                Assert.Fail($"Скидочная цена не красная");
+            Product main = new Product();
+            main.Name = mainItem.FindElement(By.CssSelector("div.name")).Text;           
+            main.Price = mainItem.FindElement(By.CssSelector("s.regular-price")).Text;
+            main.PriceFront = GetFront(mainItem.FindElement(By.CssSelector("s.regular-price")));
+            main.SalePrice = mainItem.FindElement(By.CssSelector("strong.campaign-price")).Text;
+            main.SalePriceFront = GetFront(mainItem.FindElement(By.CssSelector("strong.campaign-price")));
+            if (!IsGray(main.PriceFront.Color))
+                Assert.Fail($"Главная страница: Основная цена не серая");
+            if (!IsRed(main.SalePriceFront.Color))
+                Assert.Fail($"Главная страница: Скидочная цена не красная");           
+            if (!main.PriceFront.through)
+                Assert.Fail($"Главная страница: Основная цена не зачеркнута!");
+            if (!main.SalePriceFront.bold)
+                Assert.Fail($"Главная страница: Скидочная цена не выделена жирным!");
+            if (!(main.PriceFront.Size < main.SalePriceFront.Size))
+                Assert.Fail($"Главная страница: Основная цена не меньше скидочной");
+
             mainItem.Click();
+
             Product product = new Product();
             var productItem = driver.FindElement(By.CssSelector("div#box-product"));
             product.Name = productItem.FindElement(By.CssSelector("h1.title")).Text;
             product.Price = productItem.FindElement(By.CssSelector("s.regular-price")).Text;
-            product.PriceColor = productItem.FindElement(By.CssSelector("s.regular-price")).GetCssValue("color");
+            product.PriceFront = GetFront(productItem.FindElement(By.CssSelector("s.regular-price")));
             product.SalePrice = productItem.FindElement(By.CssSelector("strong.campaign-price")).Text;
-            product.SalePriceColor = productItem.FindElement(By.CssSelector("strong.campaign-price")).GetCssValue("color");
+            product.SalePriceFront = GetFront(productItem.FindElement(By.CssSelector("strong.campaign-price")));
 
-            if(!IsGray(product.PriceColor))
-                Assert.Fail($"Основная цена не серая");
-            if (!IsRed(product.SalePriceColor))
-                Assert.Fail($"Скидочная цена не красная");
-            if (Main.Name != product.Name)
+            if(!IsGray(product.PriceFront.Color))
+                Assert.Fail($"Страница товара: Основная цена не серая");
+            if (!IsRed(product.SalePriceFront.Color))
+                Assert.Fail($"Страница товара: Скидочная цена не красная");
+            if (main.Name != product.Name)
                 Assert.Fail($"Не совпадает имя с главной страницей!");
-            else if (Main.Price != product.Price)
+            else if (main.Price != product.Price)
                 Assert.Fail($"Не совпадает цена с главной страницей!");
-            else if (Main.SalePrice != product.SalePrice)
+            else if (main.SalePrice != product.SalePrice)
                 Assert.Fail($"Не совпадает скидочная цена с главной страницей!");
-            //for (int i = 0; i < countItem; i++)
-            //{
-            //    int s = driver.FindElements(By.CssSelector("div.middle li[class='product column shadow hover-light']"))[i].FindElements(By.CssSelector("div[class^='sticker']")).Count();
-            //    Assert.True(s == 1);
-            //}
+            if (!product.PriceFront.through)
+                Assert.Fail($"Страница товара: Основная цена не зачеркнута!");
+            if (!product.SalePriceFront.bold)
+                Assert.Fail($"Страница товара: Скидочная цена не выделена жирным!");
+            if (!(product.PriceFront.Size < product.SalePriceFront.Size))
+                Assert.Fail($"Страница товара: Основная цена не меньше скидочной");
+        }
+        private Front GetFront(IWebElement element)
+        {
+            Front f = new Front();
+            f.Color = element.GetCssValue("color");
+            f.Size = Convert.ToDecimal(element.GetCssValue("font-size").Replace("px","").Replace(".",","));
+            f.through = element.GetCssValue("text-decoration").Contains("line-through");
+            int weight = Convert.ToInt32(element.GetCssValue("font-weight"));
+            if(weight>699)
+                f.bold = true;
+            else
+                f.bold = false;
+            return f;
         }
 
         private bool IsGray(string color)
