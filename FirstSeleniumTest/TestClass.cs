@@ -67,10 +67,10 @@ namespace FirstSeleniumTest
                 if  (IsExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
                 {
                     Compare(driver.FindElement(By.CssSelector("h1")).Text, driver.FindElement(By.CssSelector("li#app- li.selected")).Text);
-                    int countItemLevel2 = driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']")).Count();
+                    int countItemLevel2 = driver.FindElements(By.CssSelector("[class='selected'] ul.docs [href]")).Count();
                     for (int n = 0; n < countItemLevel2; n++)
                     {
-                        driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']"))[n].Click();
+                        driver.FindElements(By.CssSelector("[class='selected'] ul.docs [href]"))[n].Click();
 
                         Compare(driver.FindElement(By.CssSelector("h1")).Text,driver.FindElement(By.CssSelector("li#app- li.selected")).Text);
                     }
@@ -78,7 +78,6 @@ namespace FirstSeleniumTest
                 else
                     Compare(driver.FindElement(By.CssSelector("h1")).Text, driver.FindElement(By.CssSelector("li#app-[class='selected']")).Text);
             }
-            
         }
 
         [Test]
@@ -93,10 +92,10 @@ namespace FirstSeleniumTest
                 if (IsExists(By.CssSelector("li#app-[class='selected'] ul.docs")))
                 {
                     
-                    int countItemLevel2 = driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']")).Count();
+                    int countItemLevel2 = driver.FindElements(By.CssSelector("[class='selected'] ul.docs [href]")).Count();
                     for (int n = 0; n < countItemLevel2; n++)
                     {
-                        driver.FindElements(By.CssSelector("li#app-[class='selected'] ul.docs [href ^='http://lo']"))[n].Click();
+                        driver.FindElements(By.CssSelector("[class='selected'] ul.docs [href]"))[n].Click();
                         Assert.True(IsExists(By.CssSelector("h1")));
                     }
                 }
@@ -186,6 +185,65 @@ namespace FirstSeleniumTest
                 }
                 driver.Url = "http://localhost/litecart/admin/?app=geo_zones&doc=geo_zones";
             }
+        }
+
+        [Test]
+        public void Task10()
+        {
+            driver.Url = "http://localhost/litecart/en/";
+
+            var mainItem = driver.FindElement(By.CssSelector("div#box-campaigns")).FindElement(By.CssSelector("li[class='product column shadow hover-light']"));
+            Product Main = new Product();
+            Main.Name = mainItem.FindElement(By.CssSelector("div.name")).Text;
+            
+            Main.Price = mainItem.FindElement(By.CssSelector("s.regular-price")).Text;
+            Main.PriceColor = mainItem.FindElement(By.CssSelector("s.regular-price")).GetCssValue("color");
+            Main.SalePrice = mainItem.FindElement(By.CssSelector("strong.campaign-price")).Text;
+            Main.SalePriceColor = mainItem.FindElement(By.CssSelector("strong.campaign-price")).GetCssValue("color");
+            if (!IsGray(Main.PriceColor))
+                Assert.Fail($"Основная цена не серая");
+            if (!IsRed(Main.SalePriceColor))
+                Assert.Fail($"Скидочная цена не красная");
+            mainItem.Click();
+            Product product = new Product();
+            var productItem = driver.FindElement(By.CssSelector("div#box-product"));
+            product.Name = productItem.FindElement(By.CssSelector("h1.title")).Text;
+            product.Price = productItem.FindElement(By.CssSelector("s.regular-price")).Text;
+            product.PriceColor = productItem.FindElement(By.CssSelector("s.regular-price")).GetCssValue("color");
+            product.SalePrice = productItem.FindElement(By.CssSelector("strong.campaign-price")).Text;
+            product.SalePriceColor = productItem.FindElement(By.CssSelector("strong.campaign-price")).GetCssValue("color");
+
+            if(!IsGray(product.PriceColor))
+                Assert.Fail($"Основная цена не серая");
+            if (!IsRed(product.SalePriceColor))
+                Assert.Fail($"Скидочная цена не красная");
+            if (Main.Name != product.Name)
+                Assert.Fail($"Не совпадает имя с главной страницей!");
+            else if (Main.Price != product.Price)
+                Assert.Fail($"Не совпадает цена с главной страницей!");
+            else if (Main.SalePrice != product.SalePrice)
+                Assert.Fail($"Не совпадает скидочная цена с главной страницей!");
+            //for (int i = 0; i < countItem; i++)
+            //{
+            //    int s = driver.FindElements(By.CssSelector("div.middle li[class='product column shadow hover-light']"))[i].FindElements(By.CssSelector("div[class^='sticker']")).Count();
+            //    Assert.True(s == 1);
+            //}
+        }
+
+        private bool IsGray(string color)
+        {
+            var c = color.Replace("rgba(","").Replace(")","").Replace(" ","").Split(',');
+            if(c[0] == c[1] && c[1] == c[2])
+                    return true;
+            return false;
+        }
+
+        private bool IsRed(string color)
+        {
+            var c = color.Replace("rgba(", "").Replace(")", "").Replace(" ", "").Split(',');
+            if (c[1] == "0" && c[2]=="0")
+                return true;
+            return false;
         }
         private bool IsSorted (List<string> list1)
         {
