@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
+using System.IO;
+using FirstSeleniumTest.Properties;
 
 namespace FirstSeleniumTest
 {
@@ -284,6 +286,45 @@ namespace FirstSeleniumTest
             driver.FindElement(By.Name("login")).Click();
             menuAcc = driver.FindElement(By.Id("box-account"));
             menuAcc.FindElement(By.XPath(".//a[contains(.,'Logout')]")).Click();
+        }
+
+        [Test]
+        public void Task12()
+        {
+            Login();
+            driver.FindElement(By.XPath("//span[contains(@class,'name') and .='Catalog']")).Click();
+            driver.FindElement(By.XPath("//a[contains(@class,'button') and .=' Add New Product']")).Click();
+           // driver.FindElement(By.XPath("//a[.='General']")).Click();
+            driver.FindElement(By.XPath("//label[.=' Enabled']")).Click();
+            driver.FindElement(By.XPath("//input[contains(@name,'name')]")).SendKeys("Prod");
+            driver.FindElement(By.XPath("//input[@name='code']")).SendKeys("123");
+            driver.FindElement(By.XPath("//input[contains(@data-name,'Rubber Ducks')]")).Click();
+            driver.FindElement(By.XPath("//input[contains(@name,'product_groups') and (@value='1-1')]")).Click();
+            driver.FindElement(By.XPath("//input[@name='quantity']")).Clear();
+            driver.FindElement(By.XPath("//input[@name='quantity']")).SendKeys("12");
+            string path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "prod.jpg");
+            driver.FindElement(By.XPath("//input[contains(@name,'new_images')]")).SendKeys(path);
+            driver.FindElement(By.XPath("//input[@name='date_valid_from']")).SendKeys("01012018");
+            driver.FindElement(By.XPath("//input[@name='date_valid_to']")).SendKeys("01032018");
+            
+            driver.FindElement(By.XPath("//a[.='Information']")).Click(); 
+            var select= new SelectElement(driver.FindElement(By.CssSelector("select[name='manufacturer_id']")));
+            select.SelectByValue("1");
+            driver.FindElement(By.XPath("//input[@name='keywords']")).SendKeys("product");
+            driver.FindElement(By.XPath("//input[contains(@name,'short_description')]")).SendKeys("Short Description");
+            driver.FindElement(By.CssSelector("div.trumbowyg-editor")).SendKeys(@"Описание очень хорошего товара
+Нужно брать!");
+            driver.FindElement(By.XPath("//input[contains(@name,'head_title')]")).SendKeys("Head Title");
+            driver.FindElement(By.XPath("//input[contains(@name,'meta_description')]")).SendKeys("Meta Description");
+            driver.FindElement(By.XPath("//a[.='Prices']")).Click();
+            driver.FindElement(By.XPath("//input[@name='purchase_price']")).Clear();
+            driver.FindElement(By.XPath("//input[@name='purchase_price']")).SendKeys("799,99");
+            select = new SelectElement(driver.FindElement(By.CssSelector("select[name='purchase_price_currency_code']")));
+            select.SelectByText("Euros");
+            var price = driver.FindElements(By.XPath("//input[contains(@name,'prices')]"));
+            price[0].SendKeys("20");
+            price[2].SendKeys("40");
+            driver.FindElement(By.XPath("//button[@name='save']")).Click();
         }
 
         private string GetEmail()
