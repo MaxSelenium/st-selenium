@@ -40,7 +40,7 @@ namespace FirstSeleniumTest
             //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
             driver.Manage().Timeouts().ImplicitWait= TimeSpan.FromSeconds(5);
             //driver = new FirefoxDriver(options);
-            //wait = new WebDriverWait(driver, TimeSpan.FromSeconds(5));
+            wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
         }
 
         [Test]
@@ -327,6 +327,39 @@ namespace FirstSeleniumTest
             driver.FindElement(By.XPath("//button[@name='save']")).Click();
         }
 
+
+        [Test]
+        public void Task13()
+        {
+            driver.Url = "http://localhost/LiteCart2/en/";
+            for (int i = 0; i < 3; i++)
+            {
+                driver.FindElements(By.XPath("//li[@class='product column shadow hover-light']"))[0].Click();
+                
+                if(IsExistsPresent(By.ClassName("options")))
+                {
+                    var select = new SelectElement(driver.FindElement(By.XPath("//select[contains(@name,'Size')]")));
+                    select.SelectByValue("Small");
+                }
+                var element = driver.FindElement(By.CssSelector("span.quantity"));
+                driver.FindElement(By.XPath("//button[@name='add_cart_product']")).Click();
+                wait.Until(ExpectedConditions.TextToBePresentInElement(element,(i + 1).ToString()));
+                driver.FindElement(By.CssSelector("div#logotype-wrapper")).Click();
+            }
+            driver.FindElement(By.XPath("//a[.='Checkout »']")).Click();
+
+            while (!IsExistsPresent(By.XPath("//a[.='<< Back']")))
+            {
+                if (IsExistsPresent(By.CssSelector("li.shortcut")))
+                {
+                    driver.FindElement(By.CssSelector("li.shortcut")).Click();
+                }
+                var elem = driver.FindElement(By.XPath("//table[@class='dataTable rounded-corners']"));
+                driver.FindElement(By.XPath("//button[@name='remove_cart_item']")).Click();
+                wait.Until(ExpectedConditions.StalenessOf(elem));
+            }
+        }
+
         private string GetEmail()
         {
             return $"e{DateTime.Now.ToString().Replace(" ", "").Replace(":", "").Replace(".", "")}@mail.ru";
@@ -379,6 +412,19 @@ namespace FirstSeleniumTest
         private bool IsExists(By locator)
         {
             return driver.FindElements(locator).Count > 0;
+        }
+
+        private bool IsExistsPresent(By locator)
+        {
+            try
+            {
+                driver.Manage().Timeouts().ImplicitWait=TimeSpan.FromSeconds(0);
+                return driver.FindElements(locator).Count > 0;
+            }
+            finally
+            {
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+            }
         }
         private void Login ()
         {
