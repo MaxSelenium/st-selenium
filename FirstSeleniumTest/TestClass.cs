@@ -360,6 +360,38 @@ namespace FirstSeleniumTest
             }
         }
 
+        [Test]
+        public void Task14()
+        {
+            Login();
+            driver.Url = "http://localhost/litecart/admin/?app=countries&doc=countries";
+            string mainUrl = driver.Url.Substring(0,16);
+            driver.FindElement(By.XPath("//a[contains(@class,'button') and .=' Add New Country']")).Click();
+            var Links = driver.FindElements(By.CssSelector("td#content table [target='_blank']"));
+            string mainWindow = driver.CurrentWindowHandle;
+            ICollection<string> oldWindows = driver.WindowHandles;
+            foreach (IWebElement link in Links)
+            {
+                link.Click();
+                string newWin = wait.Until(anyWindowsOtherThan(oldWindows));  // ожидание появления нового окна,
+                driver.SwitchTo().Window(newWin);
+                if (mainUrl == driver.Url.Substring(0, 16)) Assert.Fail($"Переход на тот же ресурс!");
+                driver.Close();
+                driver.SwitchTo().Window(mainWindow);
+            }
+        }
+
+        public Func<IWebDriver, string> anyWindowsOtherThan(ICollection<string> oldWindows)
+        {
+            List<string> handles = new List<string>(driver.WindowHandles);
+            foreach (string h in oldWindows)
+            {
+                handles.Remove(h);
+            }
+            Func<IWebDriver, string> a =  delegate (IWebDriver I) {return handles.Count() > 0 ? handles.First() : null;};
+            return a;
+        }
+
         private string GetEmail()
         {
             return $"e{DateTime.Now.ToString().Replace(" ", "").Replace(":", "").Replace(".", "")}@mail.ru";
