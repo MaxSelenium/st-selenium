@@ -113,10 +113,10 @@ namespace FirstSeleniumTest
         {
             driver.Url = "http://localhost/litecart/en/";
 
-            int countItem = driver.FindElements(By.CssSelector("li[class='product column shadow hover-light']")).Count();
+            int countItem = driver.FindElements(By.CssSelector(".product")).Count();
             for (int i = 0; i < countItem; i++)
             {
-                int s = driver.FindElements(By.CssSelector("li[class='product column shadow hover-light']"))[i].FindElements(By.CssSelector("div[class^='sticker']")).Count();
+                int s = driver.FindElements(By.CssSelector(".product"))[i].FindElements(By.CssSelector("div[class^='sticker']")).Count();
                 Assert.True(s==1); 
             }
         }
