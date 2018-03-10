@@ -9,22 +9,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenQA.Selenium.Support.UI;
+using OpenQA.Selenium.Support.Events;
 using System.Globalization;
 using System.IO;
 using FirstSeleniumTest.Properties;
+using OpenQA.Selenium.Remote;
 
 namespace FirstSeleniumTest
 {
     [TestFixture]
     public class TestClass
     {
-        private IWebDriver driver;
+        //private IWebDriver driver;
+        private EventFiringWebDriver driver;
         private WebDriverWait wait;
 
         [SetUp]
         public void Start()
         {
-            driver = new ChromeDriver();
+            driver = new EventFiringWebDriver(new ChromeDriver());
+            //driver = new ChromeDriver();
+            //driver = new RemoteWebDriver(new Uri("http://localhost:4444/wd/hub"), DesiredCapabilities.Chrome());
             //driver = new EdgeDriver();
             //driver = new FirefoxDriver();
 
@@ -381,6 +386,40 @@ namespace FirstSeleniumTest
             }
         }
 
+        [Test]
+        public void Task17()
+        {
+            Login();
+            driver.Url = "http://localhost/litecart/admin/?app=catalog&doc=catalog&category_id=1";
+            int i = 1;
+            int rowsCount = 2;
+            while (i < rowsCount)
+            {
+                IWebElement tabl = driver.FindElement(By.CssSelector("[name='catalog_form']"));
+                var rows = tabl.FindElements(By.CssSelector("tr.row"));
+                rowsCount = rows.Count();
+                bool isProd = false;
+                var cells = rows[i].FindElements(By.TagName("td"));
+                isProd = IsExistsPresent(cells[2], By.XPath(".//a[contains(@href,'product')]"));
+                cells[2].FindElement(By.CssSelector("a")).Click();
+                if (isProd)
+                {
+                    if (driver.Manage().Logs.GetLog("browser").Count > 0)
+                    {
+                        Console.WriteLine("При загрузки страницы возникли следующие ошибки:");
+                        foreach (LogEntry l in driver.Manage().Logs.GetLog("browser"))
+                        {
+                            Console.WriteLine(l);
+                        }
+                        Assert.Fail("При загрузки страницы возникли ошибки");
+                    }
+                    driver.Navigate().Back();
+                }
+                i++;
+            }
+        }
+
+
         public Func<IWebDriver, string> anyWindowsOtherThan(ICollection<string> oldWindows)
         {
             List<string> handles = new List<string>(driver.WindowHandles);
@@ -446,12 +485,29 @@ namespace FirstSeleniumTest
             return driver.FindElements(locator).Count > 0;
         }
 
+        private bool IsExists(IWebElement elem, By locator)
+        {
+            return elem.FindElements(locator).Count > 0;
+        }
+
         private bool IsExistsPresent(By locator)
         {
             try
             {
                 driver.Manage().Timeouts().ImplicitWait=TimeSpan.FromSeconds(0);
                 return driver.FindElements(locator).Count > 0;
+            }
+            finally
+            {
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(5);
+            }
+        }
+        private bool IsExistsPresent(IWebElement elem, By locator)
+        {
+            try
+            {
+                driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(0);
+                return elem.FindElements(locator).Count > 0;
             }
             finally
             {
