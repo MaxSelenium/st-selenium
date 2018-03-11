@@ -47,6 +47,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Manager\Application.cs" />
+    <Compile Include="Page\CartPage.cs" />
+    <Compile Include="Page\MainPage.cs" />
+    <Compile Include="Page\PageBase.cs" />
+    <Compile Include="Page\ProductPage.cs" />
     <Compile Include="Product.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -55,6 +60,9 @@
     </Compile>
     <Compile Include="TestClass.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test\Test.cs" />
+    <Compile Include="Test\TestBase.cs" />
+    <Compile Include="Tools\Tools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -71,6 +79,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
